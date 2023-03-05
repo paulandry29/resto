@@ -8,7 +8,7 @@ use App\Http\Requests\UpdateMenuRequest;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 
-class MenuController extends Controller
+class  MenuController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -106,9 +106,43 @@ class MenuController extends Controller
      * @param  \App\Models\Menu  $menu
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateMenuRequest $request, Menu $menu)
+    public function update(Request $request, $id_menu)
     {
-        //
+        if (isset($request->gambar)) {
+            $namaGambar = $request->file('gambar')->getClientOriginalName();
+
+            $data = $request->validate([
+                'gambar' => 'required|max:2048',
+                'menu' => 'required',
+                'deskripsi' => 'required',
+                'harga' => 'required',
+            ]);
+
+            Menu::where('id_menu', $id_menu)->update([
+                'menu' => $data['menu'],
+                'deskripsi' => $data['deskripsi'],
+                'harga' => $data['harga'],
+                'gambar' => $namaGambar,
+            ]);
+
+            $request->gambar->move(public_path('gambar'), $namaGambar);
+
+        } else {
+            $data = $request->validate([
+                'menu' => 'required',
+                'deskripsi' => 'required',
+                'harga' => 'required',
+            ]);
+
+            Menu::where('id_menu', $id_menu)->update([
+                'menu' => $data['menu'],
+                'deskripsi' => $data['deskripsi'],
+                'harga' => $data['harga'],
+            ]);
+        }
+
+        return redirect('admin/menu');
+
     }
 
     /**

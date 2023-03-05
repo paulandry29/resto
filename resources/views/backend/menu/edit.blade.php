@@ -7,15 +7,14 @@
 </div>
 <div class="row">
     <div class="col-6">
-        <form action="{{ url('/admin/menu'.$menu->id_menu) }}" method="post" enctype="multipart/form-data">
+        <form action="{{ url('/admin/postmenu/'.$menu->id_menu) }}" method="post" enctype="multipart/form-data">
             @csrf
-            @method('PUT')
 
             <div class="form-group mt-2">
                 <label class="form-label" for="kategori">Kategori</label>
                 <select name="kategori" class="form-select">
                     @foreach ($kategoris as $kategori)
-                        <option @selected($kategori->id_kategori) value="{{ $kategori->id_kategori }}">{{ $kategori->kategori }}</option>
+                        <option @selected($kategori->id_kategori==$menu->id_kategori) value="{{ $kategori->id_kategori }}">{{ $kategori->kategori }}</option>
                     @endforeach
                 </select>
                 <span class="text-danger">
