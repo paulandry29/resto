@@ -27,7 +27,7 @@
 
                 <tr>
                     <td>{{$no++}}</td>
-                    <td><a href="{{ url('admin/order/'.$order->id_order.'/edit') }}">{{$order->pelanggan}}</a></td>
+                    <td><a href="{{ url('admin/kasir/'.$order->id_order.'/edit') }}">{{$order->pelanggan}}</a></td>
                     <td>{{$order->tglOrder}}</td>
                     <td>Rp. {{number_format($order->total)}}</td>
                     <td>Rp. {{number_format($order->bayar)}}</td>
@@ -35,7 +35,7 @@
                     @php
                         $status = "LUNAS";
                         if ($order->status == 0) {
-                            $status = '<a href=" '.url('admin/order/'.$order->id_order).' ">BAYAR</a>';
+                            $status = '<a href=" '.url('admin/kasir/'.$order->id_order).' ">BAYAR</a>';
                         }
                     @endphp
                     <td>{!! $status !!}</td>

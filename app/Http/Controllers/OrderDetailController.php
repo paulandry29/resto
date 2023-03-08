@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\OrderDetail;
 use App\Http\Requests\StoreOrderDetailRequest;
 use App\Http\Requests\UpdateOrderDetailRequest;
+use Illuminate\Http\Request;
 
 class OrderDetailController extends Controller
 {
@@ -15,7 +16,12 @@ class OrderDetailController extends Controller
      */
     public function index()
     {
-        //
+        $details = OrderDetail::join('orders', 'order_details.id_order', '=', 'orders.id_order')
+                                ->join('menus', 'order_details.id_menu', '=', 'menus.id_menu')
+                                ->join('pelanggans', 'orders.id_pelanggan', '=', 'pelanggans.id_pelanggan')
+                                    ->select('order_details.*', 'orders.*', 'menus.*', 'pelanggans.*')
+                                    ->paginate(5);
+        return view('backend.detail.select', ['details' => $details]);
     }
 
     /**
@@ -23,9 +29,19 @@ class OrderDetailController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $tgl_mulai = $request->tgl_mulai;
+        $tgl_akhir = $request->tgl_akhir;
+
+        $details = OrderDetail::join('orders', 'order_details.id_order', '=', 'orders.id_order')
+                                ->join('menus', 'order_details.id_menu', '=', 'menus.id_menu')
+                                ->join('pelanggans', 'orders.id_pelanggan', '=', 'pelanggans.id_pelanggan')
+                                    ->whereBetween('orders.tglOrder', [$tgl_mulai, $tgl_akhir]) 
+                                    ->select('order_details.*', 'orders.*', 'menus.*', 'pelanggans.*')
+                                    ->paginate(5);
+
+        return view('backend.detail.select', ['details' => $details]);
     }
 
     /**

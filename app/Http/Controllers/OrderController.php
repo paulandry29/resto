@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Http\Requests\StoreOrderRequest;
-use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Requests\Request;
+use Illuminate\Http\Request as HttpRequest;
 
 class OrderController extends Controller
 {
@@ -15,7 +16,11 @@ class OrderController extends Controller
      */
     public function index()
     {
-        return view('backend.order.select');
+        $orders = Order::join('pelanggans', 'orders.id_pelanggan', '=', 'pelanggans.id_pelanggan')
+                            ->select(['orders.*', 'pelanggans.*'])
+                            ->orderBy('status', 'ASC')
+                            ->paginate(10);
+        return view('backend.order.select', ['orders'=>$orders]);
     }
 
     /**
@@ -45,9 +50,11 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function show(Order $order)
+    public function show($id_order)
     {
-        //
+        $order = Order::where('id_order', $id_order)->first();
+
+        return view('Backend.order.edit', ['order'=>$order]);
     }
 
     /**
@@ -56,9 +63,15 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function edit(Order $order)
+    public function edit($id_order)
     {
-        //
+        $orders = Order::join('order_details', 'orders.id_order', '=', 'order_details.id_order')
+                        ->join('menus', 'order_details.id_menu', '=', 'menus.id_menu')
+                        ->join('pelanggans', 'orders.id_pelanggan', '=', 'pelanggans.id_pelanggan')
+                            ->where('orders.id_order', $id_order)
+                            ->get(['orders.*', 'order_details.*', 'menus.*', 'pelanggans.*']);
+
+        return view('backend.order.detail', ['orders'=>$orders]);
     }
 
     /**
@@ -68,9 +81,23 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateOrderRequest $request, Order $order)
+    public function update(HttpRequest $request, $id_order)
     {
-        //
+        $data = $request->validate([
+            'bayar' => 'required',
+        ]);
+
+        $order = Order::where('id_order', $id_order)->first();
+        $kembali = $data['bayar']-$order->total;
+
+        Order::where('id_order', $id_order)
+                    ->update([
+                        'bayar' => $data['bayar'],
+                        'kembali' => $kembali,
+                        'status' => 1,
+                    ]);
+
+        return redirect('admin/order');
     }
 
     /**

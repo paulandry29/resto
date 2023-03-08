@@ -14,7 +14,7 @@ class AuthController extends Controller
                 return redirect('/admin/user');
             }
             if ($user->level == 'kasir') {
-                return redirect('/admin/order');
+                return redirect('/admin/kasir');
             }
             if ($user->level == 'manager') {
                 return redirect('/admin/kategori');
@@ -40,7 +40,7 @@ class AuthController extends Controller
                 return redirect('/admin/user');
             }
             if ($user->level == 'kasir') {
-                return redirect('/admin/order');
+                return redirect('/admin/kasir');
             }
             if ($user->level == 'manager') {
                 return redirect('/admin/kategori');

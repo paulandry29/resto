@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Models\Order;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class KasirController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +15,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return view('backend.user.select', ['users'=>$users]);
+        $orders = Order::join('pelanggans', 'orders.id_pelanggan', '=', 'pelanggans.id_pelanggan')
+                            ->select(['orders.*', 'pelanggans.*'])
+                            ->orderBy('status', 'ASC')
+                            ->paginate(10);
+        return view('backend.kasir.order', ['orders'=>$orders]);
     }
 
     /**
@@ -25,7 +29,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('backend.user.insert');
+        //
     }
 
     /**
@@ -36,21 +40,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name'=> 'required',
-            'email'=> 'required | email | unique:users',
-            'level'=> 'required',
-            'password'=> 'required | min:3'
-        ]);
-
-        User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'level' => $data['level'],
-            'password' => bcrypt($data['password']),
-        ]);
-
-        return redirect('admin/kategori');
+        //
     }
 
     /**
@@ -61,18 +51,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        $users = User::where('id', $id)->get();
-        $levels = User::where('level', $users[0]['level']);
-        $jumlah = $levels->count();
-
-        if ($jumlah == 1) {
-            session()->flash('pesan', 'Data hanya satu, tidak bisa dihapus!!');
-        } else {
-            User::where('id', $id)->delete();
-        }
-
-        return redirect('admin/user');
-
+        //
     }
 
     /**
@@ -83,9 +62,7 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $users = User::where('id', $id)->first();
-
-        return view('backend.user.edit', ['users' => $users]);
+        //
     }
 
     /**
@@ -97,15 +74,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = $request->validate([
-            'password' => 'required | min:3',
-        ]);
-
-        User::where('id', $id)->update([
-            'password' => bcrypt($data['password']),
-        ]);
-
-        return redirect('admin/user');
+        //
     }
 
     /**

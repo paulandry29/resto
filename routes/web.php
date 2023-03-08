@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\FrontController;
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\KategoriController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PagesController;
@@ -70,11 +71,16 @@ Route::group(['prefix'=>'admin', 'middleware'=>['auth']], function(){
 
     Route::group(['middleware' => ['CekLogin:kasir']], function(){
         Route::resource('order', OrderController::class);
+        Route::resource('orderdetail', OrderDetailController::class);
+        Route::resource('kasir', KasirController::class);
     });
 
     Route::group(['middleware' => ['CekLogin:manager']], function(){
         Route::resource('kategori', KategoriController::class);
         Route::resource('menu', MenuController::class);
+        Route::resource('order', OrderController::class);
+        Route::resource('orderdetail', OrderDetailController::class);
+        Route::resource('pelanggan', PelangganController::class);
         Route::get('select', [MenuController::class, 'select']);
         Route::post('postmenu/{id}', [MenuController::class, 'update']);
     });
